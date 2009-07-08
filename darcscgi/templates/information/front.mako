@@ -50,7 +50,7 @@ An example configuration: <a href="${h.url_for("/static/example-configuration.xm
 <p>
 An equivalent to the internal defaults: <a href="${h.url_for("/static/default-configuration.xml")}">default-configuration.xml</a>.
 </p>
-<h2>Client-Side</h2>
+<h2>Client-Side Download</h2>
 <p>
 When read-authentication is enabled, darcs-links expects to receive an authentication string in the body of the POST. This is simply an OpenPGP clearsigned and ascii armored message that contains one line: "welcome". To create the signature.
 </p>
@@ -62,11 +62,25 @@ gpg --clearsign --armor filename
 Then instruct whichever http client darcs uses to send the authentication string.
 </p>
 <pre>
-export DARCS_GET_HTTP="curl --data-urlencode sig@/path/to/file.asc"
+export DARCS_GET_HTTPS="curl -3 -k --data-urlencode sig@/path/to/file.asc"
 </pre>
 <p>
 Darcs-links first verifies the contents of the message, then checks that the signature matches the contents and the the signature is allowed in accordance to the repository keyring.
 </p>
+<h2>Client-Side Uploads</h2>
+<p>
+Darcs can create an rfc822 formatted (email) message from a patch bundle to send via HTTP POST as follows.
+</p>
+<pre>
+darcs send --sign --to http://url
+</pre>
+<p>
+Unfortunately darcs is only able to send the patch bundle via HTTP. To enable HTTPS or other protocols, darcs must employ an external program called from the DARCS_APPLY_FOO environment variable.
+<p>
+<pre>
+export DARCS_APPLY_HTTPS="curl -3 -k --data-urlencode @-"
+darcs push --sign
+</pre>
 <h2>License</h2
 <p>
 Software components permitting, I would like to release this software under the GPLv3.
